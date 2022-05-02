@@ -49,3 +49,23 @@ def graph_loader(dir):
                         g.y = g.y[0]
                         train_data.append(g)
     return train_data
+
+
+def graph_enum_loader(dir):
+    data = []
+    directory = [d for d in os.listdir(dir) if '.DS_Store' not in d]
+    for d in directory:
+        conver=[]
+        if os.path.isdir(dir+d):
+            direct = os.listdir(dir+d+'/')
+            direct.sort()
+            for f in direct:
+                if '.DS_Store' not in f:
+                    g = torch.load(dir+d+'/'+f)
+                    if g.num_nodes>1:
+                        x = torch.stack(g.x)
+                        g.x = x.squeeze(1)
+                        g.y = g.y[0]
+                        conver.append(g)
+            data.append(conver)
+    return data
