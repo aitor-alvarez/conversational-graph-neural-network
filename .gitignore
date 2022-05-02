@@ -12,3 +12,4 @@ data/pheme-rnr-dataset
 *.csv
 trained/
 *.pt
+*.pyc
