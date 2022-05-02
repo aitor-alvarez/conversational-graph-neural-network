@@ -1,0 +1,14 @@
+creds.py
+*.txt
+data/covid
+data/Twitter_URL
+venv/
+.DS_Store
+.idea/
+data/CMU_MisCov19_dataset.csv
+data/pheme-rnr-dataset
+*.json
+.tmp/
+*.csv
+trained/
+*.pt
