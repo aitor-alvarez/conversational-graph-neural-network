@@ -77,7 +77,7 @@ def word_embeddings(tweets):
 	sentences = normalize_text(tweets)
 	model = Word2Vec(sentences=sentences, vector_size=200, window=5, min_count=5)
 	embeddings = model.wv
-	embeddings.save("pretrained/word2vec.wordvectors")
+	embeddings.save("trained/word2vec.wordvectors")
 	return embeddings
 
 

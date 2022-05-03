@@ -66,6 +66,7 @@ def graph_enum_loader(dir):
                         x = torch.stack(g.x)
                         g.x = x.squeeze(1)
                         g.y = g.y[0]
+                        g.id = f.replace('.pt', '')
                         conver.append(g)
             data.append(conver)
     return data
