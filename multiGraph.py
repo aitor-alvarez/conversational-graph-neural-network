@@ -7,39 +7,38 @@ import torch.nn.functional as F
 from torch_geometric.utils import from_networkx
 
 
-
-def graph_embedding(data_path):
+#Two step for creating multi-level graph. First we obtain node embedding and then
+#we create the links between nodes based on similarity.
+def node_embedding(data_path):
 	model = torch.load('trained/conversation.pt')
 	model.eval()
 	data = graph_enum_loader(data_path)
 	num = 1
 	for d in data:
-		gpath = 'data/pheme-rnr-dataset/multigraph/'+str(num)+'/'
-		if not os.path.exists(gpath):
-			os.mkdir(gpath)
+		graph = nx.Graph()
+		gpath = 'data/pheme-rnr-dataset/multigraph/'
 		for i in d:
 			embd1 = model(i.x, i.edge_index, i.weight, i.batch)
-			torch.save(embd1, gpath+i.id+'.pt')
+			graph.add_node(i.id, x=embd1, y=i.y)
+		nx.write_gpickle(graph, gpath+str(num)+'.gpickle')
+		num+=1
+	return None
 
 
 #Multilevel graph
-def create_multiLevelGraph(data_path):
-	data = os.listdir(data_path)
-	num = 1
+def create_multiLevelGraph(graph_path):
+	data = os.listdir(graph_path)
+	data = [d for d in data if d.endswith('.gpickle')]
+	num=1
 	for d in data:
-		gd = os.listdir(data_path+d+'/')
-		gdir = [g for g in gd if g.endswith('.pt')]
-		graph = nx.Graph()
-		for i, j in combinations(gdir, 2):
-			embd1 = torch.load(data_path+d+'/'+i)
-			embd2 = torch.load(data_path+d+'/'+j)
-			sim = F.cosine_similarity(embd1, embd2, dim=1)
-			graph.add_node(i.id, x=embd1, y=i.y)
-			graph.add_node(j.id, x=embd2, y=j.y)
+		g = nx.read_gpickle(graph_path+d)
+		nodes = g.nodes
+		for i, j in combinations(nodes, 2):
+			sim = F.cosine_similarity(nodes[i]['x'].detach().squeeze(dim=1), nodes[j]['x'].detach().squeeze(dim=1), dim=1)
 			if sim >= 0.85:
-				graph.add_edge(i.id, j.id)
-				nx.set_edge_attributes(graph, {(i.id, j.id): {"weight":sim}})
-		output = from_networkx(graph)
-		torch.save(output, 'data/pheme-rnr-dataset/multigraphs/multigraph'+str(num)+'.pt')
+				g.add_edge(i, j)
+				nx.set_edge_attributes(g, {(i, j): {"weight":sim}})
+		output = from_networkx(g)
+		torch.save(output, 'data/pheme-rnr-dataset/multigraph/multigraph_'+str(num)+'.pt')
 		num +=1
 	return None

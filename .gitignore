@@ -13,3 +13,4 @@ data/pheme-rnr-dataset
 trained/
 *.pt
 *.pyc
+multigraph/
