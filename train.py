@@ -2,7 +2,6 @@ import torch
 from data.dataloader import graph_loader
 from torch_geometric.loader import DataLoader
 from models.text_graphs import ConversationalGraph
-from torch.functional import F
 import random
 
 

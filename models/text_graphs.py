@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 from torch_geometric.nn import GCNConv, GraphConv, global_mean_pool
 from torch.functional import F
@@ -26,4 +27,20 @@ class ConversationalGraph(nn.Module):
         #Graph classification
         x = F.dropout(x, p=0.5, training=self.training)
         out = self.linear(x)
+        return out
+
+
+class NodePrediction(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.gconv1 = GCNConv(128, 128)
+        self.gconv2 = GCNConv(128, 4)
+        self.relu = nn.LeakyReLU()
+
+    def forward(self, x_embeddings, edge_index, weights):
+        x = self.gconv1(x_embeddings, edge_index, weights)
+        x = self.relu(x)
+        x = F.dropout(x, training=self.training)
+        x = self.gconv2(x, edge_index, weights)
+        out = F.softmax(x, dim=1)
         return out
