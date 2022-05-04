@@ -1,6 +1,6 @@
 import os
 import torch
-from torch_geometric.loader import GraphSAINTNodeSampler
+from torch_geometric.loader import GraphSAINTNodeSampler, RandomNodeSampler
 from models.text_graphs import NodePrediction
 import random
 
@@ -21,7 +21,6 @@ def training(model, train_loader):
 		epoch_loss=[]
 		print(len(train_loader))
 		for graph in train_loader:
-			edge_weight = graph.edge_norm * graph.weight
 			optimizer.zero_grad()
 			labels = graph.y
 			out = model(torch.squeeze(graph.x), graph.edge_index, graph.weight)
@@ -73,14 +72,14 @@ def main(data_path):
 	model.to(device)
 	graphs = os.listdir(data_path)
 	graphs = [g for g in graphs if g.endswith('.pt')]
-	train = random.sample(graphs, 1)
+	train = random.sample(graphs, 4)
 	test = list(set(graphs)-set(train))
 	test = random.sample(test, 1)
 	for graph in train:
 		g = torch.load(data_path+graph)
-		train_loader = GraphSAINTNodeSampler(g, batch_size=round((g.num_nodes/3)), num_steps=10, sample_coverage=100)
+		train_loader = RandomNodeSampler(g, num_parts=6)
 		training(model, train_loader)
 
-	gtest = torch.load(data_path+test)
-	test_loader = GraphSAINTNodeSampler(g, batch_size=round((g.num_nodes / 1)), num_steps=1, sample_coverage=100)
-	test(model, gtest)
+	gtest = torch.load(data_path+test[0])
+	test_loader = RandomNodeSampler(g, num_parts=1)
+	test(model, test_loader)
