@@ -109,12 +109,6 @@ def bert_tweet(tweets):
 	return tweet_embeddings
 
 
-def transformer_sentences(tweets):
-	model = SentenceTransformer('bert-base-nli-mean-tokens')
-	embeddings = model.encode(tweets)
-	return embeddings
-
-
 def normalize_text(sentences):
 	word_tokenizer = NLTKWordTokenizer()
 	stop_words = set(stopwords.words('english'))
