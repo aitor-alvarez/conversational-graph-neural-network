@@ -49,6 +49,8 @@ def training(train, test, num_epochs=100, batch_size=32, num_classes=2):
 			break
 
 	###TEST####
+
+	torch.save(model, 'trained/conversation.pt')
 	model.eval()
 	correct=0
 	with torch.no_grad():

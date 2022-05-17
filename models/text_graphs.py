@@ -25,7 +25,7 @@ class ConversationalGraph(nn.Module):
         #Mean pooling
         x = global_mean_pool(x, batch)
         #Graph classification
-        x = F.dropout(x, p=0.5, training=self.training)
+        x = F.dropout(x, p=0.2, training=self.training)
         out = self.linear(x)
         return out
 
