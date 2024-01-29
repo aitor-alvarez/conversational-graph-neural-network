@@ -1,2 +1,2 @@
 # conversational-graph-neural-network
-Conversational hierarchichal graph neural networks for misinformation detection
+Conversational hierarchichal graph neural networks for misinformation detection in conversations.
